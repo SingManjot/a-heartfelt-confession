@@ -1,9 +1,18 @@
+# Build and Deploy to GitHub Pages
+# - Ensures contents: write permission so the GITHUB_TOKEN can push
+# - Verifies the dist directory exists and lists it for debugging
+# - Copies index.html to 404.html for SPA fallback (if dist/index.html exists)
 name: Build and Deploy to GitHub Pages
 
+# trigger on pushes to main (adjust branch if you use another)
 on:
   push:
     branches:
       - main
+
+# Give explicit permission so the workflow can push to gh-pages
+permissions:
+  contents: write
 
 jobs:
   build-and-deploy:
@@ -11,6 +20,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # ensure the action has the token available to push back
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Use Node.js 18
         uses: actions/setup-node@v4
@@ -24,11 +37,26 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Debug - show dist contents (fail if missing)
+        run: |
+          echo "Listing repo root for context:"
+          ls -la
+          echo "Checking dist directory:"
+          if [ -d ./dist ]; then
+            ls -la ./dist
+          else
+            echo "ERROR: ./dist not found. Build probably failed or output directory differs."
+            exit 1
+          fi
+
       - name: Copy index.html to 404.html (SPA fallback)
         if: always()
         run: |
-          if [ -d ./dist ] && [ -f ./dist/index.html ]; then
+          if [ -f ./dist/index.html ]; then
             cp ./dist/index.html ./dist/404.html
+            echo "Copied index.html -> 404.html"
+          else
+            echo "No dist/index.html to copy; skipping"
           fi
 
       - name: Deploy to gh-pages
@@ -36,3 +64,16 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+
+# If you get a 403 pushing with GITHUB_TOKEN despite contents: write,
+# you can create a Personal Access Token (PAT) with `repo` scope and
+# store it as a secret (e.g. GH_PAGES_PAT). Then replace the deploy step above with:
+#
+#      - name: Deploy to gh-pages (with PAT)
+#        uses: peaceiris/actions-gh-pages@v3
+#        with:
+#          github_token: ${{ secrets.GH_PAGES_PAT }}
+#          publish_dir: ./dist
+#
+# To create a PAT: Settings → Developer settings → Personal access tokens → Generate new token.
+# Give it the `repo` scope (and `workflow` if needed). Add the token in your repo Secrets as GH_PAGES_PAT.
