@@ -21,11 +21,14 @@ const BuildUpSection = ({ isVisible, onComplete }: BuildUpSectionProps) => {
   const [allComplete, setAllComplete] = useState(false);
 
   useEffect(() => {
-    if (!isVisible) return;
+    // Prevent rerunning if already showing messages
+    if (!isVisible || visibleMessages.length > 0) return;
 
     messages.forEach((_, index) => {
       setTimeout(() => {
-        setVisibleMessages(prev => [...prev, index]);
+        setVisibleMessages(prev =>
+          prev.includes(index) ? prev : [...prev, index]
+        );
         if (index === messages.length - 1) {
           setTimeout(() => {
             setAllComplete(true);
@@ -34,7 +37,7 @@ const BuildUpSection = ({ isVisible, onComplete }: BuildUpSectionProps) => {
         }
       }, index * 1200);
     });
-  }, [isVisible, onComplete]);
+  }, [isVisible, visibleMessages.length, onComplete]);
 
   if (!isVisible) return null;
 
@@ -62,13 +65,6 @@ const BuildUpSection = ({ isVisible, onComplete }: BuildUpSectionProps) => {
         {visibleMessages.length > 4 && (
           <div className="pt-8 animate-heartbeat text-4xl">
             💓
-          </div>
-        )}
-
-        {/* Continue button */}
-        {allComplete && (
-          <div className="pt-12 animate-fade-in-up">
-            <span className="text-muted-foreground font-body">Scroll down...</span>
           </div>
         )}
       </div>
