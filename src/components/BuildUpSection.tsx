@@ -44,12 +44,12 @@ const BuildUpSection = ({ isVisible, onComplete }: BuildUpSectionProps) => {
         {messages.map((message, index) => (
           <p
             key={index}
-            className={`font-body text-xl md:text-2xl text-foreground transition-all duration-700 
+            className={`font-body text-xl md:text-2xl text-foreground 
                        ${visibleMessages.includes(index) 
-                         ? 'opacity-100 translate-y-0' 
-                         : 'opacity-0 translate-y-8'}`}
+                         ? 'animate-smooth-reveal' 
+                         : 'opacity-0'}`}
             style={{ 
-              transitionDelay: `${index * 0.1}s`,
+              animationDelay: `${index * 0.08}s`,
               color: index >= messages.length - 2 ? 'hsl(var(--primary))' : undefined,
               fontWeight: index >= messages.length - 2 ? 600 : 400,
             }}

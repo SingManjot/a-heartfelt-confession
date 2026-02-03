@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import FloatingHearts from './FloatingHearts';
+import PartyConfetti from './PartyConfetti';
 
 interface CelebrationSectionProps {
   isVisible: boolean;
@@ -20,6 +21,9 @@ const CelebrationSection = ({ isVisible }: CelebrationSectionProps) => {
 
   return (
     <section className="min-h-screen flex flex-col items-center justify-center px-6 py-20 relative overflow-hidden">
+      {/* Party confetti explosion */}
+      <PartyConfetti />
+      
       {/* Celebration hearts burst */}
       <FloatingHearts intensity="celebration" />
       
