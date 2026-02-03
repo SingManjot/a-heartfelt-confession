@@ -41,6 +41,14 @@ const Index = () => {
   if (showCelebration) {
     return (
       <div className="min-h-screen bg-background relative overflow-hidden">
+        {/* Only 1 music player is needed even in celebration */}
+        <audio
+          src="/assets/music.mp3"
+          autoPlay
+          loop
+          controls={false}
+          style={{ display: "none" }} // Hidden element, music keeps playing
+        />
         <CelebrationSection isVisible={true} />
       </div>
     );
@@ -48,6 +56,16 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-x-hidden">
+      {/* --------- Add this for background music --------- */}
+      <audio
+        src="/assets/music.mp3"
+        autoPlay
+        loop
+        controls={false}
+        style={{ display: "none" }} // Hidden element, but music plays
+      />
+      {/* ------------------------------------------------ */}
+
       {/* Background floating hearts */}
       <FloatingHearts intensity="normal" />
 
@@ -64,14 +82,14 @@ const Index = () => {
 
         <div ref={emotionalRef}>
           <EmotionalSection 
-            isVisible={currentSection >= 2} 
+            isVisible={currentSection >= 2}
             onComplete={handleEmotionalComplete}
           />
         </div>
 
         <div ref={questionRef}>
-          <QuestionSection 
-            isVisible={currentSection >= 3} 
+          <QuestionSection
+            isVisible={currentSection >= 3}
             onYesClick={handleYesClick}
           />
         </div>
