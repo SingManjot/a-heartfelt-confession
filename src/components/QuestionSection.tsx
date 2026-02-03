@@ -32,11 +32,17 @@ const QuestionSection = ({ isVisible, onYesClick }: QuestionSectionProps) => {
     if (!containerRef.current) return;
     
     const container = containerRef.current.getBoundingClientRect();
-    const maxX = container.width - 150;
-    const maxY = container.height - 60;
+    const buttonWidth = 150;
+    const buttonHeight = 60;
     
-    const newX = Math.random() * maxX - maxX / 2;
-    const newY = Math.random() * maxY - maxY / 2;
+    // Calculate safe boundaries (keep button fully inside container with padding)
+    const padding = 20;
+    const maxX = (container.width - buttonWidth) / 2 - padding;
+    const maxY = (container.height - buttonHeight) / 2 - padding;
+    
+    // Generate random position within safe boundaries
+    const newX = (Math.random() * 2 - 1) * maxX;
+    const newY = (Math.random() * 2 - 1) * maxY;
     
     setNoButtonPosition({ x: newX, y: newY });
     setEscapeCount(prev => Math.min(prev + 1, escapeMessages.length - 1));
