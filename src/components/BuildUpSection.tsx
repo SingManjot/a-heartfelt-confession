@@ -1,0 +1,79 @@
+import { useEffect, useState } from 'react';
+
+interface BuildUpSectionProps {
+  isVisible: boolean;
+  onComplete: () => void;
+}
+
+const messages = [
+  "I tried to think of the perfect words…",
+  "And the perfect moment…",
+  "Something grand and unforgettable…",
+  "But then I realized…",
+  "The best moments are the simple ones.",
+  "Like when you smile…",
+  "Or when you laugh at my silly jokes…",
+  "Every moment with you feels special.",
+];
+
+const BuildUpSection = ({ isVisible, onComplete }: BuildUpSectionProps) => {
+  const [visibleMessages, setVisibleMessages] = useState<number[]>([]);
+  const [allComplete, setAllComplete] = useState(false);
+
+  useEffect(() => {
+    if (!isVisible) return;
+
+    messages.forEach((_, index) => {
+      setTimeout(() => {
+        setVisibleMessages(prev => [...prev, index]);
+        if (index === messages.length - 1) {
+          setTimeout(() => {
+            setAllComplete(true);
+            setTimeout(onComplete, 1500);
+          }, 1000);
+        }
+      }, index * 1200);
+    });
+  }, [isVisible, onComplete]);
+
+  if (!isVisible) return null;
+
+  return (
+    <section className="min-h-screen flex flex-col items-center justify-center px-6 py-20">
+      <div className="max-w-xl text-center space-y-6">
+        {messages.map((message, index) => (
+          <p
+            key={index}
+            className={`font-body text-xl md:text-2xl text-foreground transition-all duration-700 
+                       ${visibleMessages.includes(index) 
+                         ? 'opacity-100 translate-y-0' 
+                         : 'opacity-0 translate-y-8'}`}
+            style={{ 
+              transitionDelay: `${index * 0.1}s`,
+              color: index >= messages.length - 2 ? 'hsl(var(--primary))' : undefined,
+              fontWeight: index >= messages.length - 2 ? 600 : 400,
+            }}
+          >
+            {message}
+          </p>
+        ))}
+
+        {/* Heartbeat decoration */}
+        {visibleMessages.length > 4 && (
+          <div className="pt-8 animate-heartbeat text-4xl">
+            💓
+          </div>
+        )}
+
+        {/* Continue button */}
+        {allComplete && (
+          <div className="pt-12 animate-fade-in-up">
+            <span className="text-muted-foreground font-body">Scroll down...</span>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+};
+
+export default BuildUpSection;
