@@ -23,17 +23,23 @@ const BuildUpSection = ({ isVisible, onComplete }: BuildUpSectionProps) => {
   useEffect(() => {
     if (!isVisible) return;
 
+    const timers: NodeJS.Timeout[] = [];
+    
     messages.forEach((_, index) => {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         setVisibleMessages(prev => [...prev, index]);
         if (index === messages.length - 1) {
-          setTimeout(() => {
+          const completeTimer = setTimeout(() => {
             setAllComplete(true);
             setTimeout(onComplete, 1500);
           }, 1000);
+          timers.push(completeTimer);
         }
       }, index * 1200);
+      timers.push(timer);
     });
+
+    return () => timers.forEach(clearTimeout);
   }, [isVisible, onComplete]);
 
   if (!isVisible) return null;
